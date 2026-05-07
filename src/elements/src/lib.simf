@@ -1,0 +1,32 @@
+
+/// Copied here from std for now so that you don't have to import the whole std lib just for this function.
+fn eq_option_asset1_amount1(a: Option<(Asset1, Amount1)>, b: Option<(Asset1, Amount1)>) -> bool {
+    let a_i: Either<(), (Asset1, Amount1)> = <Either<(), (Asset1, Amount1)>>::into(a);
+    let b_i: Either<(), (Asset1, Amount1)> = <Either<(), (Asset1, Amount1)>>::into(b);
+    match a_i {
+        Left(_: ()) => match b_i {
+            Left(_: ()) => true,
+            Right(_: (Asset1, Amount1)) => false,
+        },
+        Right(a_i_i: (Asset1, Amount1)) => match b_i {
+            Right(b_i_i: (Asset1, Amount1)) => eq_asset1_amount1(a_i_i, b_i_i),
+            Left(_: ()) => false,
+        },
+    }
+}
+
+
+
+
+
+fn assert_readonly_utxo() {
+    // NOTE: it must exist in the same position in the output.
+
+    // output amount must be the same as input amount
+    let current_index : u32 = jet::current_index();
+    assert!(eq_option_asset1_amount1(jet::output_amount(current_index), 
+    jet::input_amount(current_index)));
+
+    // script hash must be the same as input script hash
+    assert!(jet::eq_256(jet::output_script_hash(current_index), jet::input_script_hash(current_index)));
+}
